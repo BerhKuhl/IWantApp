@@ -3,8 +3,10 @@ using IWantApp.Endpoints.Employees;
 using IWantApp.Endpoints.Security;
 using IWantApp.Infra.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using src.Infra.Data;
 using System.Text;
 
@@ -19,7 +21,17 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Password.RequireLowercase = false;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+    options.AddPolicy("EmployeePolicy", p =>
+        p.RequireAuthenticatedUser().RequireClaim("EmployeeCode"));
+    options.AddPolicy("Employee006Policy", p =>
+        p.RequireAuthenticatedUser().RequireClaim("EmployeeCode", "005"));
+});
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -41,6 +53,33 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.AddSwaggerGen(option =>
+{
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
+
 builder.Services.AddScoped<QueryAllUsersWithClaimName>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -48,14 +87,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseAuthorization();
-app.UseAuthentication();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthorization();
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
