@@ -27,6 +27,7 @@ public class Category : Entity
         Active = active;
         Name = name;
         EditedBy = editedBy;
+        EditedOn = DateTime.Now;
 
         Validate();
     }

@@ -6,6 +6,7 @@ using System.Xml.Linq;
 
 namespace IWantApp.Endpoints.Categories;
 
+[Authorize(Policy = "EmployeePolocy")]
 public class CategoryPost
 {
     public static string Template => "/categories";
