@@ -1,5 +1,4 @@
-﻿using Flunt.Validations;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using src.Infra.Data;
 
 namespace IWantApp.Endpoints.Employees;
