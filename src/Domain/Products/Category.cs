@@ -1,7 +1,4 @@
-﻿using Flunt.Validations;
-using System.Globalization;
-
-namespace IWantApp.Domain.Products;
+﻿namespace IWantApp.Domain.Products;
 
 public class Category : Entity
 {

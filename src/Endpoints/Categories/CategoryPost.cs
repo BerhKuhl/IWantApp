@@ -1,10 +1,4 @@
-﻿using IWantApp.Domain.Products;
-using IWantApp.Infra.Data;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.Xml.Linq;
-
-namespace IWantApp.Endpoints.Categories;
+﻿namespace IWantApp.Endpoints.Categories;
 
 [Authorize(Policy = "EmployeePolocy")]
 public class CategoryPost
