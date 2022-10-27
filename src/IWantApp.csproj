@@ -26,6 +26,7 @@
     
     <Using Include="IWantApp.Domain.Products" />
     <Using Include="IWantApp.Endpoints.Categories" />
+    <Using Include="IWantApp.Endpoints.Clients" />
     <Using Include="IWantApp.Endpoints.Employees;" />
     <Using Include="IWantApp.Endpoints.Products" />
     <Using Include="IWantApp.Endpoints.Security;" />

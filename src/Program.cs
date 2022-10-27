@@ -1,3 +1,4 @@
+using IWantApp.Domain.Users;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Text.Json;
@@ -86,6 +87,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddScoped<QueryAllUsersWithClaimName>();
+builder.Services.AddScoped<UserCreator>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -111,8 +113,12 @@ app.MapMethods(CategoryPut.Template, CategoryPut.Methods, CategoryPut.Handle);
 app.MapMethods(EmployeeGetAll.Template, EmployeeGetAll.Methods, EmployeeGetAll.Handle);
 app.MapMethods(EmployeePost.Template, EmployeePost.Methods, EmployeePost.Handle);
 
+app.MapMethods(ClientGet.Template, ClientGet.Methods, ClientGet.Handle);
+app.MapMethods(ClientPost.Template, ClientPost.Methods, ClientPost.Handle);
+
 app.MapMethods(ProductGetAll.Template, ProductGetAll.Methods, ProductGetAll.Handle);
 app.MapMethods(ProductGetById.Template, ProductGetById.Methods, ProductGetById.Handle);
+app.MapMethods(ProductGetShowcase.Template, ProductGetShowcase.Methods, ProductGetShowcase.Handle);
 app.MapMethods(ProductPost.Template, ProductPost.Methods, ProductPost.Handle);
 
 app.MapMethods(TokenPost.Template, TokenPost.Methods, TokenPost.Handle);
