@@ -8,6 +8,7 @@ public class Product : Entity
     public bool HasStock { get; private set; }
     public bool Active { get; private set; } = true;
     public Decimal Price { get; private set; }
+    public ICollection<Order> Orders { get; internal set; }
 
     private Product() { }
 

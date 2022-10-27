@@ -23,7 +23,7 @@ public class ProductGetShowcase
         var queryFilter = queryBase.Skip((page - 1) * row).Take(row);
 
         var products = queryFilter.ToList();
-        var results = products.Select(p => new ProductsResponse(p.Name, p.Category.Name, p.Description, p.HasStock, p.Price, p.Active));
+        var results = products.Select(p => new ProductsResponse(p.Id, p.Name, p.Category.Name, p.Description, p.HasStock, p.Price, p.Active));
 
         return Results.Ok(results);
     }

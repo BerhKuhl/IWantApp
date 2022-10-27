@@ -23,11 +23,13 @@
     <Using Include="System.IdentityModel.Tokens.Jwt" />
     <Using Include="System.Security.Claims" />
     <Using Include="System.Text" />
-    
+
+    <Using Include="IWantApp.Domain.Orders" />
     <Using Include="IWantApp.Domain.Products" />
     <Using Include="IWantApp.Endpoints.Categories" />
     <Using Include="IWantApp.Endpoints.Clients" />
     <Using Include="IWantApp.Endpoints.Employees;" />
+    <Using Include="IWantApp.Endpoints.Orders;" />
     <Using Include="IWantApp.Endpoints.Products" />
     <Using Include="IWantApp.Endpoints.Security;" />
     <Using Include="IWantApp.Infra.Data" />
