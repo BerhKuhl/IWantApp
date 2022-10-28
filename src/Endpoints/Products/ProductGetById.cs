@@ -1,6 +1,4 @@
-﻿using IWantApp.Domain.Products;
-
-namespace IWantApp.Endpoints.Products;
+﻿namespace IWantApp.Endpoints.Products;
 
 public class ProductGetById
 {
