@@ -7,9 +7,9 @@ public class EmployeeGetAll
     public static Delegate Handle => Action;
 
     [Authorize(Policy = "EmployeePolicy")]
-    public static async Task<IResult> Action(int? page, int? rows, QueryAllUsersWithClaimName query)
+    public static async Task<IResult> Action(QueryAllUsersWithClaimName query, int page = 1, int rows = 10)
     {
-        var result = await query.Execute((int)page, (int)rows);
+        var result = await query.Execute(page, rows);
         return Results.Ok(result);
     }
 }

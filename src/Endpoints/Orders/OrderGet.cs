@@ -7,54 +7,31 @@ public class OrderGet
     public static Delegate Handle => Action;
 
     [Authorize]
-    public static async Task<IResult> Action(Guid? orderId, Guid? clientId, HttpContext http, ApplicationDbContext context, int page = 1, int row = 10, string orderBy = "CreatedOn")
+    public static async Task<IResult> Action(Guid? orderId, HttpContext http, ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
+        // Buscando claims no Token
         var clientClaim = http.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
         var claim = http.User.Claims.FirstOrDefault(c => c.Type == "Cpf" || c.Type == "EmployeeCode");
 
+        // Validando se os parâmetros foram passados corretamente
         if (claim == null) return Results.Unauthorized();
+        if (orderId == null) return Results.BadRequest("Order Id is required!");
 
-        switch (claim.Type)
-        {
-            case "Cpf":
-                if (orderId == null) return Results.BadRequest("Order Id is required!");
+        // Buscando e validando o Pedido
+        var order = await context.Orders.AsNoTracking().Include(o => o.Products).Where(o => o.Id == orderId).FirstOrDefaultAsync();
+        if (order == null) return Results.NotFound("Order not found");
+        if (order.ClientId != clientClaim && claim.Type != "EmployeeCode") return Results.Unauthorized();
 
-                var order = await context.Orders.AsNoTracking().Include(o => o.Products).Where(o => o.Id == orderId).FirstOrDefaultAsync();
-                if (order == null) return Results.NotFound("Order not found");
-                if (order.ClientId != clientClaim) return Results.Unauthorized();
+        // Tranformando os Produtos na classe de resposta
+        var products = order.Products.Select(p => new OrderProduct(p.Id, p.Name));
 
-                var products = order.Products.Select(p => new OrderProduct(p.Id, p.Name));
+        // Buscando o usuário do pedido
+        var clientOrder = await userManager.FindByIdAsync(order.ClientId);
 
-                //var result = new OrderResponse(order.ClientId, products, order.DeliveryAdress, order.Total, order.IsValid,
-                //    order.CreatedBy, order.CreatedOn, order.EditedBy, order.EditedOn);
+        // Transformando todas as buscas na classe de resposta.
+        var result = new OrderResponse(order.ClientId, clientOrder.Email, products, order.DeliveryAdress, order.Total, order.IsValid,
+            order.CreatedBy, order.CreatedOn, order.EditedBy, order.EditedOn);
 
-                return Results.Ok();
-            case "EmployeeCode":
-                //if (row > 10) return Results.BadRequest("Row with max 10");
-
-                //var queryBase = context.Orders.AsNoTracking().Include(o => o.Products).Where(o => o.ClientId == clientId.ToString());
-
-                ////if (clientId != null) queryBase = queryBase.Where(o => o.ClientId == clientId.ToString());
-
-                //if (orderBy == "CreatedOn")
-                //    queryBase = queryBase.OrderBy(o => o.CreatedOn);
-                //else if (orderBy == "Total")
-                //    queryBase = queryBase.OrderBy(o => o.Total);
-                //else
-                //    return Results.BadRequest("Order only by CreatedOn or Total");
-
-                //var queryFilter = queryBase.Skip((page - 1) * row).Take(row);
-
-                //var orders = queryFilter.ToList();
-
-                ////var product = orders.Select(p => new OrderProduct(p.Products., p.Name));
-
-                //var results = orders.Select(o => new OrderResponse(o.ClientId, new , o.DeliveryAdress, o.Total, o.IsValid,
-                //    o.CreatedBy, o.CreatedOn, o.EditedBy, o.EditedOn));
-
-                //return Results.Ok(results);
-            default:
-                return Results.Unauthorized();
-        }
+        return Results.Ok(result);
     }
 }
